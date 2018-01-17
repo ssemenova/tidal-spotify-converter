@@ -1,1 +1,3 @@
 tidalapi
+spotipy
+requests
