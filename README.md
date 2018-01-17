@@ -24,4 +24,4 @@ spotify_id = 'your_spotify_id'
 Go to your profile page on spotify, and click on the three dots > share > copy spotify URI. Then, when pasting the result into your secrets file, get rid of "spotify:user:" before the number.
 
 ## To find your tidal ID
-Go to the tidal [web player](listen.tidal.com), click on your profile, copy the number in the url: https://listen.tidal.com/profile/thenumberyouwant.
+Go to the tidal [web player](https://listen.tidal.com), click on your profile, copy the number in the url: https://listen.tidal.com/profile/thenumberyouwant.
