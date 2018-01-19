@@ -1,27 +1,62 @@
 # Spotify -> Tidal batch upload
 
-Batch upload your Spotify playlists into Tidal playlists, using [tidalapi](http://pythonhosted.org/tidalapi/_modules/tidalapi.html) and [spotipy](http://spotipy.readthedocs.io/).
+A suite of helpful (to me) functions to transfer data from Spotify to Tidal, and vice versa, using [tidalapi](http://pythonhosted.org/tidalapi/_modules/tidalapi.html) and [spotipy](http://spotipy.readthedocs.io/).
 
-Optionally, you can also run ```star_all_tracks_in_playlist``` with a Tidal playlist name to star all the songs in it, since there is no way to do that through the Tidal UI. I don't want to deal with Spotify authentification tbh so if you want to move all your songs from Spotify into Tidal, put them in a playlist, import that playlist using this script, then run star_all_tracks_in_playlist on that playlist. Then delete the playlist.
+## Things you can do
 
-## To run:
+### delete_all_tidal_playlists()
+Delete all your tidal playlists.
+
+### move_all_tidal_playlists_to_spotify()
+Move all your tidal playlists to spotify.
+
+### move_one_tidal_playlist_to_spotify(playlist_id)
+Move one of your tidal playlists to spotify. Takes a playlist ID
+
+### move_all_spotify_playlists_to_tidal()
+Moves all of your spotify playlists to tidal.
+
+### move_favourites_from_spotify_to_tidal()
+Move all your favourites/liked/saved tracks from spotify to your favourites tracks in tidal.
+
+There are also ```connect_to_spotify``` and ```connect_to_tidal``` functions, which you must run before running any of the other functions. Both authenticate you and return either a spotipy or tidalapi session.
+
+
+## To run
 
 1. Clone this repository
 2. Install the requirements: ```pip install -r requirements.txt```
 3. Create a secrets.py file: ```touch secrets.py```
-4. Copy and paste the following into the secrets file. You want numbers for both the tidal and spotify IDs, not your email address.
+4. Copy and paste the following into the secrets file. You want numbers for both the tidal and spotify IDs, not your email address. See the sections below for how to obtain both your tidal and spotify IDs, as well as spotify client credentials.
 ```
 tidal_id = 'your_tidal_id'
 tidal_pwd = 'your_tidal_password'
 spotify_id = 'your_spotify_id'
+tidal_username = 'your_tidal_email_address@email.com'
+spotify_username = 'your_spotify_email_address@email.com'
+SPOTIPY_CLIENT_ID='your_spotify_client_ID'
+SPOTIPY_CLIENT_SECRET='your_spotify_client_secret'
+SPOTIPY_REDIRECT_URI='http://localhost/'
+
 ```
 5. Run script.py: ```python script.py```
 6. ???
 7. Profit.
-8. Any songs that could not be found on Tidal will be saved into a csv file called ```songs.csv```, along with the playlist they originally came from.
 
 ## To find your spotify ID
 Go to your profile page on spotify, and click on the three dots > share > copy spotify URI. Then, when pasting the result into your secrets file, get rid of "spotify:user:" before the number.
 
 ## To find your tidal ID
 Go to the tidal [web player](https://listen.tidal.com), click on your profile, copy the number in the url: https://listen.tidal.com/profile/thenumberyouwant.
+
+## Get spotify API client credentials
+For some reason, there is no Spotify how-to on this that I can find, so here it is:
+1. Go [here](https://beta.developer.spotify.com/dashboard/), sign in with your spotify account, and register an app.
+2. Click on the app, and copy the client ID and client secret into your secrets file.
+3. Click 'edit settings' in the top right corner.
+4. Scroll down to 'Redirect URIs' and add 'http://localhost/'
+5. Save
+Now you should be able to log in when running the program. A window will pop up asking you to sign in, and then the program will continue running.
+
+## Does it work?
+Eh, good enough. A lot of songs aren't found because of the discrepancies between the two platforms with song names and artist names (Admiral vs. The Admiral). Further, a lot of songs have addendums - "We Belong - Odesza Remix", or "Storm Returns (A Prefuse/Tommy Guerrero Interlude)". A more dedicated programmer might parse the song names, perhaps getting rid of anything after a dash or anything between parenthesis. But this doesn't work all the time (I want the Odesza remix of We Belong, not the original!). If you would like to submit a PR to make this part of the code more robust, I would greatly welcome it.
