@@ -1,6 +1,6 @@
 # Spotify -> Tidal batch upload
 
-A suite of helpful (to me) functions to transfer data from Spotify to Tidal, and vice versa, using [tidalapi](http://pythonhosted.org/tidalapi/_modules/tidalapi.html) and [spotipy](http://spotipy.readthedocs.io/).
+A suite of helpful (to me) functions to transfer data from Spotify to Tidal, and vice versa, using [tidalapi](http://pythonhosted.org/tidalapi/_modules/tidalapi.html) and [spotipy](http://spotipy.readthedocs.io/). Because Tidal does not have a public-facing API, if they change their URLs or requirements, this will break. Feel free to submit a bug report if it does and I'll try to fix it if I can.
 
 ## Things you can do
 
@@ -37,9 +37,8 @@ spotify_username = 'your_spotify_email_address@email.com'
 SPOTIPY_CLIENT_ID='your_spotify_client_ID'
 SPOTIPY_CLIENT_SECRET='your_spotify_client_secret'
 SPOTIPY_REDIRECT_URI='http://localhost/'
-
 ```
-5. Run script.py: ```python script.py```
+5. Run script.py: ```python script.py```. Right now, the script just signs into Spotify, signs into Tidal, and moves all Spotify songs to Tidal, but you can edit the script to run whatever functions you want.
 6. ???
 7. Profit.
 
