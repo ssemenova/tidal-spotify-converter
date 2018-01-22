@@ -10,24 +10,25 @@ import tidalapi
 # Options:
 # connect_to_spotify()
 # connect_to_tidal()
-# delete_all_tidal_playlists() -> done
+# delete_all_tidal_playlists()
 # move_all_tidal_playlists_to_spotify()
 # move_one_tidal_playlist_to_spotify(playlist_id)
-# move_all_spotify_playlists_to_tidal() -> done
+# move_all_spotify_playlists_to_tidal()
 # move_favourites_from_spotify_to_tidal()
 
 
 # tidalapi does not have these endpoints
 def get_tidal_create_playlist_url(tidal_id):
     return 'https://listen.tidal.com/v1/users/' + tidal_id + '/playlists'
-def get_tidal_add_song_to_playlist_url(playlist_id):
+def get_tidal_add_track_to_playlist_url(playlist_id):
     return 'https://listen.tidal.com/v1/playlists/' + playlist_id + '/items'
-def get_tidal_find_song_url():
+def get_tidal_find_track_url():
     return 'https://listen.tidal.com/v1/search/tracks'
 def get_tidal_playlist(playlist_id):
     return 'https://listen.tidal.com/v1/playlists/' + playlist_id
 def get_tidal_user_playlists():
     return 'https://listen.tidal.com/v1/users/' + tidal_id + '/playlists'
+
 
 def connect_to_spotify():
     scope = 'user-library-read'
@@ -59,7 +60,25 @@ def connect_to_tidal():
 
 
 def move_favourites_from_spotify_to_tidal():
-    pass
+    user = tidal_session.user
+    user_favourites = user.favorites
+
+    def _get_spotify_favourites(offset):
+        return sp.current_user_saved_tracks(limit=20, offset=offset)
+
+    offset = 0
+    spotify_favourites = _get_spotify_favourites(offset)
+    while spotify_favourites:
+        for item in spotify_favourites['items']:
+            track = item['track']
+            track_id = _search_for_track_on_tidal(
+                track['name'], track['artists'][0]['name']
+            )
+            if track_id > 0:
+                user_favourites.add_track(track_id)
+        offset = offset + 20
+        spotify_favourites = _get_spotify_favourites(offset)
+
 
 def delete_all_tidal_playlists():
     try:
@@ -98,14 +117,15 @@ def delete_all_tidal_playlists():
 
 def move_all_tidal_playlists_to_spotify():
     pass
+    # _add_tracks_to_spotify_playlist(track_ids, spotify_playlist_id)
 
 
 def move_one_tidal_playlist_to_spotify(playlist_id):
     pass
+    # _add_tracks_to_spotify_playlist(track_ids, spotify_playlist_id)
 
 
 def move_all_spotify_playlists_to_tidal():
-    # Get playlists
     playlists = sp.user_playlists(spotify_id)
     while playlists:
         for i, playlist in enumerate(playlists['items']):
@@ -116,12 +136,6 @@ def move_all_spotify_playlists_to_tidal():
             playlists = sp.next(playlists)
         else:
             playlists = None
-
-    # Get user's saved tracks
-    saved_tracks = sp.current_user_saved_tracks()
-    for item in saved_tracks['items']:
-        track = item['track']
-        favourite_track_in_tidal(item)
 
 
 def _add_playlist_to_tidal(playlist, tidal_session):
@@ -148,7 +162,7 @@ def _add_playlist_to_tidal(playlist, tidal_session):
 
 
 def _add_tracks_to_tidal_playlist(playlist_id, tracks):
-    url = get_tidal_add_song_to_playlist_url(playlist_id)
+    url = get_tidal_add_track_to_playlist_url(playlist_id)
     for name, artist in tracks:
         tidal_track_id = _search_for_track_on_tidal(name, artist)
         if tidal_track_id > -1:
@@ -183,12 +197,12 @@ def _search_for_track_on_tidal(name, artist):
     matched_artist = False
     offset = 0
     limit = 300
-    end_of_song_list = False
-    while not matched_artist and not end_of_song_list:
+    end_of_track_list = False
+    while not matched_artist and not end_of_track_list:
         try:
             r = requests.request(
                 'GET',
-                get_tidal_find_song_url(),
+                get_tidal_find_track_url(),
                 headers={
                     'x-tidal-sessionid': tidal_session.session_id
                 },
@@ -201,7 +215,7 @@ def _search_for_track_on_tidal(name, artist):
             )
 
             if len(r.json()['items']) == 0:
-                end_of_song_list = True
+                end_of_track_list = True
 
             for track in r.json()['items']:
                 if _artist_in_response(track):
@@ -245,27 +259,19 @@ def _create_tidal_playlist(playlist):
 
     return r.json()['uuid']
 
-# def _add_tracks_to_spotify_playlist():
-#     if len(sys.argv) > 3:
-#         username = sys.argv[1]
-#         playlist_id = sys.argv[2]
-#         track_ids = sys.argv[3:]
-#     else:
-#         print "Usage: %s username playlist_id track_id ..." % (sys.argv[0],)
-#         sys.exit()
-#
-#     scope = 'playlist-modify-public'
-#     token = util.prompt_for_user_token(username, scope)
-#
-#     if token:
-#         sp = spotipy.Spotify(auth=token)
-#         sp.trace = False
-#         results = sp.user_playlist_add_tracks(username, playlist_id, track_ids)
-#         print results
-#     else:
-#         print "Can't get token for", username
+
+def _add_tracks_to_spotify_playlist(track_ids, playlist_id):
+    scope = 'playlist-modify-public'
+    token = util.prompt_for_user_token(username, scope)
+
+    if token:
+        sp = spotipy.Spotify(auth=token)
+        sp.trace = False
+        results = sp.user_playlist_add_tracks(username, playlist_id, track_ids)
+    else:
+        print "Can't get token for", username
 
 
 sp = connect_to_spotify()
 tidal_session = connect_to_tidal()
-move_all_spotify_playlists_to_tidal()
+move_favourites_from_spotify_to_tidal()
