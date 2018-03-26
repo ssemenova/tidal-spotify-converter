@@ -33,6 +33,7 @@ def get_tidal_user_playlists():
 def get_discover_weekly_playlist():
     return 'https://api.spotify.com/v1/users/spotify/playlists/'  + spotify_discover_weekly_id + '/tracks'
 
+
 def connect_to_spotify():
     scope = 'user-library-read'
     token = util.prompt_for_user_token(
@@ -140,6 +141,7 @@ def move_all_spotify_playlists_to_tidal():
         else:
             playlists = None
 
+
 def move_discover_weekly_from_spotify_to_tidal():
     try:
         r = requests.request(
@@ -155,8 +157,6 @@ def move_discover_weekly_from_spotify_to_tidal():
     playlist = r.json()
     _add_playlist_to_tidal(playlist, tidal_session, playlist_name="Discover Weekly", tracks=playlist)
 
-   # spotify_playlist = sp.user_playlist(spotify_id, playlist_id=spotify_discover_weekly_id)
-   # _add_playlist_to_tidal(spotify_playlist, tidal_session)
 
 def _add_playlist_to_tidal(playlist, tidal_session, tracks=None, playlist_name=None):
     playlist_name_catch = playlist_name if playlist_name else playlist['name']
