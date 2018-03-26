@@ -14,10 +14,13 @@ Move all your tidal playlists to spotify.
 Move one of your tidal playlists to spotify. Takes a playlist ID
 
 ### move_all_spotify_playlists_to_tidal()
-Moves all of your spotify playlists to tidal.
+Move all of your spotify playlists to tidal.
 
 ### move_favourites_from_spotify_to_tidal()
 Move all your favourites/liked/saved tracks from spotify to your favourites tracks in tidal.
+
+### move_discover_weekly_from_spotify_to_tidal()
+Move a discovery weekly playlist on spotify to tidal.
 
 There are also ```connect_to_spotify``` and ```connect_to_tidal``` functions, which you must run before running any of the other functions. Both authenticate you and return either a spotipy or tidalapi session.
 
@@ -34,9 +37,10 @@ tidal_pwd = 'your_tidal_password'
 spotify_id = 'your_spotify_id'
 tidal_username = 'your_tidal_email_address@email.com'
 spotify_username = 'your_spotify_email_address@email.com'
-SPOTIPY_CLIENT_ID='your_spotify_client_ID'
-SPOTIPY_CLIENT_SECRET='your_spotify_client_secret'
-SPOTIPY_REDIRECT_URI='http://localhost/'
+SPOTIPY_CLIENT_ID = 'your_spotify_client_ID'
+SPOTIPY_CLIENT_SECRET = 'your_spotify_client_secret'
+SPOTIPY_REDIRECT_URI = 'http://localhost/'
+spotify_discover_weekly_id = 'your_spotify_discover_weekly_id'
 ```
 5. Run script.py: ```python script.py```. Right now, the script just signs into Spotify, signs into Tidal, and moves all Spotify songs to Tidal, but you can edit the script to run whatever functions you want.
 6. ???
@@ -47,6 +51,9 @@ Go to your profile page on spotify, and click on the three dots > share > copy s
 
 ## To find your tidal ID
 Go to the tidal [web player](https://listen.tidal.com), click on your profile, copy the number in the url: https://listen.tidal.com/profile/thenumberyouwant.
+
+## To find your spotify discover weekly ID
+Go to your discover weekly playlist on spotify, and click on the three dots > share > copy playlist link. Then, when pasting the results into your secret file, copy the number between "https://open.spotify.com/user/spotify/playlist/" and "?si=bunchOfRandomThings".
 
 ## Get spotify API client credentials
 For some reason, there is no Spotify how-to on this that I can find, so here it is:

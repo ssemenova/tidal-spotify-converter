@@ -31,8 +31,6 @@ def get_tidal_user_playlists():
 
 # Endpoints not in spotipy
 def get_discover_weekly_playlist():
-    # spotipy.user_playlists returns playlists a user has CREATED
-    # This URL returns playlists a user is subscribed to
     return 'https://api.spotify.com/v1/users/spotify/playlists/'  + spotify_discover_weekly_id + '/tracks'
 
 def connect_to_spotify():
