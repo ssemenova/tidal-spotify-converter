@@ -1,4 +1,4 @@
-from ..tidal-spotify-converter-secrets import tidal_id, tidal_username, tidal_pwd, spotify_id, spotify_username, spotify_discover_weekly_id, SPOTIPY_CLIENT_ID, SPOTIPY_CLIENT_SECRET, SPOTIPY_REDIRECT_URI
+from secrets import tidal_id, tidal_username, tidal_pwd, spotify_id, spotify_username, spotify_discover_weekly_id, SPOTIPY_CLIENT_ID, SPOTIPY_CLIENT_SECRET, SPOTIPY_REDIRECT_URI
 import requests
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
@@ -185,7 +185,7 @@ def _add_tracks_to_spotify_playlist(track_ids, playlist_id):
         sp.trace = False
         results = sp.user_playlist_add_tracks(username, playlist_id, track_ids)
     else:
-        print "Can't get token for", username
+        print("Can't get token for" + username)
 
 
 sp, client_credentials_manager = connect_to_spotify()
