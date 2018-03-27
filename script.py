@@ -1,4 +1,4 @@
-from secrets import tidal_id, tidal_username, tidal_pwd, spotify_id, spotify_username, spotify_discover_weekly_id, SPOTIPY_CLIENT_ID, SPOTIPY_CLIENT_SECRET, SPOTIPY_REDIRECT_URI
+from ..tidal-spotify-converter-secrets import tidal_id, tidal_username, tidal_pwd, spotify_id, spotify_username, spotify_discover_weekly_id, SPOTIPY_CLIENT_ID, SPOTIPY_CLIENT_SECRET, SPOTIPY_REDIRECT_URI
 import requests
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
@@ -19,23 +19,14 @@ def get_tidal_find_track_url():
 def get_discover_weekly_playlist():
     return 'https://api.spotify.com/v1/users/spotify/playlists/'  + spotify_discover_weekly_id + '/tracks'
 
+
 def connect_to_spotify():
-    scope = 'user-library-read'
-    token = util.prompt_for_user_token(
-        spotify_username,
-        scope,
+    client_credentials_manager = SpotifyClientCredentials(
         client_id=SPOTIPY_CLIENT_ID,
-        client_secret=SPOTIPY_CLIENT_SECRET,
-        redirect_uri=SPOTIPY_REDIRECT_URI
+        client_secret=SPOTIPY_CLIENT_SECRET
     )
-
-    if token:
-        sp = spotipy.Spotify(auth=token)
-    else:
-        print("Can't get spotify token for " + username)
-        sys.exit()
-
-    return sp, token
+    sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+    return sp, client_credentials_manager
 
 
 def connect_to_tidal():
@@ -48,26 +39,13 @@ def connect_to_tidal():
     return tidal_session
 
 
-def move_all_spotify_playlists_to_tidal():
-    playlists = sp.user_playlists(spotify_id)
-    while playlists:
-        for i, playlist in enumerate(playlists['items']):
-            print("Workin on playlist:" + playlist['name'])
-            if (playlist['owner']['id'] == spotify_id):
-                _add_playlist_to_tidal(playlist, tidal_session)
-        if playlists['next']:
-            playlists = sp.next(playlists)
-        else:
-            playlists = None
-
-
 def move_discover_weekly_from_spotify_to_tidal():
     try:
         r = requests.request(
            'GET',
            get_discover_weekly_playlist(),
            headers={
-               'Authorization': 'Bearer ' + sp_token
+               'Authorization': 'Bearer ' + client_credentials_manager.get_access_token()
            }
         )
     except requests.exceptions.RequestException as e:
@@ -210,6 +188,6 @@ def _add_tracks_to_spotify_playlist(track_ids, playlist_id):
         print "Can't get token for", username
 
 
-sp, sp_token = connect_to_spotify()
+sp, client_credentials_manager = connect_to_spotify()
 tidal_session = connect_to_tidal()
 move_discover_weekly_from_spotify_to_tidal()
