@@ -20,7 +20,7 @@ Move all of your spotify playlists to tidal.
 Move all your favourites/liked/saved tracks from spotify to your favourites tracks in tidal.
 
 ### move_discover_weekly_from_spotify_to_tidal()
-Move a discovery weekly playlist on spotify to tidal.
+Move a discovery weekly playlist on spotify to tidal. A minimal version of this repository that calls this function and is configured to run on my server is in [this branch](https://github.com/ssemenova/tidal-spotify-converter/tree/discover-weekly-systemd-job).
 
 There are also ```connect_to_spotify``` and ```connect_to_tidal``` functions, which you must run before running any of the other functions. Both authenticate you and return either a spotipy or tidalapi session.
 
