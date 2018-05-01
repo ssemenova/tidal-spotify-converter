@@ -134,8 +134,7 @@ def move_all_spotify_playlists_to_tidal():
     while playlists:
         for i, playlist in enumerate(playlists['items']):
             print("Workin on playlist:" + playlist['name'])
-            if (playlist['owner']['id'] == spotify_id):
-                _add_playlist_to_tidal(playlist, tidal_session)
+            _add_playlist_to_tidal(playlist, tidal_session)
         if playlists['next']:
             playlists = sp.next(playlists)
         else:
@@ -172,13 +171,12 @@ def _add_playlist_to_tidal(playlist, tidal_session, tracks=None, playlist_name=N
             sanitized_tracks.append([
                 track['name'], track['artists'][0]['name']
             ])
-
-    tracks_catch = tracks if tracks else sp.user_playlist(spotify_id, playlist['id'], fields="tracks,next")['tracks']
-    _add_track_to_sanitized_list(tracks)
-    while tracks['next']:
-        tracks = sp.next(tracks)
-        _add_track_to_sanitized_list(tracks)
-
+    
+    if (playlist['owner']['id'] == spotify_id):
+    	tracks_catch = tracks if tracks else sp.user_playlist(spotify_id, playlist['id'], fields="tracks,next")['tracks']
+    else:
+	tracks_catch = tracks if tracks else sp.user_playlist(playlist['owner']['id'], playlist['id'], fields="tracks,next")['tracks']
+    _add_track_to_sanitized_list(tracks_catch)
     _add_tracks_to_tidal_playlist(playlist_id, sanitized_tracks)
 
 
@@ -293,4 +291,5 @@ def _add_tracks_to_spotify_playlist(track_ids, playlist_id):
 
 sp, sp_token = connect_to_spotify()
 tidal_session = connect_to_tidal()
-move_discover_weekly_from_spotify_to_tidal()
+# move_discover_weekly_from_spotify_to_tidal()
+move_all_spotify_playlists_to_tidal()
