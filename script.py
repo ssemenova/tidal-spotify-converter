@@ -33,6 +33,7 @@ def get_tidal_user_playlists():
 def get_discover_weekly_playlist():
     return 'https://api.spotify.com/v1/users/spotify/playlists/'  + spotify_discover_weekly_id + '/tracks'
 
+tidal_oldplaylists = []
 
 def connect_to_spotify():
     scope = 'user-library-read'
@@ -130,11 +131,15 @@ def move_one_tidal_playlist_to_spotify(playlist_id):
 
 
 def move_all_spotify_playlists_to_tidal():
+    get_tidal_old_playlists()
     playlists = sp.user_playlists(spotify_id)
     while playlists:
         for i, playlist in enumerate(playlists['items']):
-            print("Workin on playlist:" + playlist['name'])
-            _add_playlist_to_tidal(playlist, tidal_session)
+	    if playlist['name'] not in tidal_oldplaylists:
+            	print("Workin on playlist:" + playlist['name'])
+            	_add_playlist_to_tidal(playlist, tidal_session)
+	    else:
+	    	print("A playlist with name " + playlist['name'] + " already exists in TIDAL. Skipping...")
         if playlists['next']:
             playlists = sp.next(playlists)
         else:
@@ -177,6 +182,9 @@ def _add_playlist_to_tidal(playlist, tidal_session, tracks=None, playlist_name=N
     else:
 	tracks_catch = tracks if tracks else sp.user_playlist(playlist['owner']['id'], playlist['id'], fields="tracks,next")['tracks']
     _add_track_to_sanitized_list(tracks_catch)
+    while tracks_catch['next']:
+        tracks_catch = sp.next(tracks_catch)
+        _add_track_to_sanitized_list(tracks_catch)
     _add_tracks_to_tidal_playlist(playlist_id, sanitized_tracks)
 
 
@@ -201,6 +209,28 @@ def _add_tracks_to_tidal_playlist(playlist_id, tracks):
             except requests.exceptions.RequestException as e:
                 print('Error adding tracks to playlist: ' + e)
                 # TODO: should add playlist name to CSV of failures
+
+def get_tidal_old_playlists():
+    try:
+        r = requests.request(
+            'GET',
+            get_tidal_user_playlists(),
+            headers={
+                'x-tidal-sessionid': tidal_session.session_id,
+                'if-none-match': '*'
+            },
+            params={
+                'countryCode': 'US',
+                'limit': 999
+            }
+        )
+	# print r.json()
+        playlists = [item['title'] for item in r.json()['items']]
+    except requests.exceptions.RequestException as e:
+        print("Could not get list of playlists")
+    if playlists:
+        for playlist in playlists:
+		tidal_oldplaylists.append(playlist)
 
 
 def _search_for_track_on_tidal(name, artist):
