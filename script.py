@@ -176,7 +176,7 @@ def _add_playlist_to_tidal(playlist, tidal_session, tracks=None, playlist_name=N
             sanitized_tracks.append([
                 track['name'], track['artists'][0]['name']
             ])
-    
+
     tracks_catch = tracks if tracks else sp.user_playlist(playlist['owner']['id'], playlist['id'], fields="tracks,next")['tracks']
     _add_track_to_sanitized_list(tracks_catch)
     while tracks_catch['next']:
@@ -313,7 +313,7 @@ def _add_tracks_to_spotify_playlist(track_ids, playlist_id):
         sp.trace = False
         results = sp.user_playlist_add_tracks(username, playlist_id, track_ids)
     else:
-        print "Can't get token for", username
+        print("Can't get token for " + username)
 
 
 sp, sp_token = connect_to_spotify()
