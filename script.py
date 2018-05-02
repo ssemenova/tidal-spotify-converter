@@ -177,10 +177,7 @@ def _add_playlist_to_tidal(playlist, tidal_session, tracks=None, playlist_name=N
                 track['name'], track['artists'][0]['name']
             ])
     
-    if (playlist['owner']['id'] == spotify_id):
-    	tracks_catch = tracks if tracks else sp.user_playlist(spotify_id, playlist['id'], fields="tracks,next")['tracks']
-    else:
-	tracks_catch = tracks if tracks else sp.user_playlist(playlist['owner']['id'], playlist['id'], fields="tracks,next")['tracks']
+    tracks_catch = tracks if tracks else sp.user_playlist(playlist['owner']['id'], playlist['id'], fields="tracks,next")['tracks']
     _add_track_to_sanitized_list(tracks_catch)
     while tracks_catch['next']:
         tracks_catch = sp.next(tracks_catch)
